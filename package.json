@@ -1,0 +1,22 @@
+{
+  "name": "qobuz-patcher",
+  "version": "0.0.1",
+  "description": "Qobuz Patcher",
+  "main": "audioplayer/audioplayer.js",
+  "private": true,
+  "scripts": {
+    "miniaudio:prepare": "node scripts/fetch_node_headers.js",
+    "miniaudio:build": "cmake -B audioplayer/build -S audioplayer -DBUILD_SHARED_LIBS=ON -DMINIAUDIO_NO_ENCODING=ON -DMINIAUDIO_NO_GENERATION=ON -DMA_NO_RUNTIME_LINKING=ON && cmake --build audioplayer/build",
+    "miniaudio:copy": "npm run build:miniaudio && cp ./audioplayer/miniaudio/build/miniaudio.node ./app",
+    "app:update": "node scripts/update_app.js",
+    "app:rebuild": "node scripts/rebuild_app.js",
+    "app:patch": "node scripts/patch_app.js",
+    "app:run": "electron app --no-sandbox --disable-setuid-sandbox",
+    "app:pack": "electron-packager ./app Qobuz --out=dist --overwrite"
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.3.0",
+    "@electron/rebuild": "^4.2.1",
+    "electron": "^45.0.0"
+  }
+}

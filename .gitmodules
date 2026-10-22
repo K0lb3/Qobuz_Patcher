@@ -1,0 +1,5 @@
+[submodule "audioplayer/miniaudio_node/miniaudio"]
+	path = audioplayer/miniaudio_node/miniaudio
+	url = https://github.com/mackron/miniaudio.git
+	tag = 0.11.25
+	shallow = true

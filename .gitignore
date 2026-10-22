@@ -1,0 +1,18 @@
+/app
+/dist
+/node_modules
+/research
+/work-dir
+/.vscode
+**/build
+audioplayer/miniaudio_node/include
+
+package-lock.json
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*

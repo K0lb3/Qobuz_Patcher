@@ -36,6 +36,7 @@ This project **IS NOT and will never be a tool for pirating content** or any oth
 
 ### Requirements
 
+- `npm` with any version of `node`
 - `7z` (for unpacking Qobuz.exe and the nupkg within)
 
 ### Setup
@@ -62,6 +63,49 @@ Afterwards the local files are setup and the development version directly run vi
 The taskbar icon doesn't work yet,
 just the miniture version for when the app in minified.
 Fixing this is low priority.
+
+### Audioplayer (juce.node) Structure
+
+In the following, the structure of the native `juce.node` extension will be discussed, as this native extension has to be reimplemented to use the Qobuz desktop app on officially unsupported systems.
+The functions can be seen by using a debugger,
+the signatures were inferred from loggins the input arguments and output results,
+and the argument names guessed.
+
+`juce.node` provides a custom audio player-like environment, featuring the following functions:
+- open(isNextTrack: bool, filePath: str, format: str) -> bool
+- openStream(isNextTrack: bool, sampleData: bytes, format: str, sampleCount: int) -> bool
+- close(free: bool)
+- play() -> "" (empty string)
+- pause()
+- status() -> "Playing" | "Stopped" | "Blocked"
+- trackInformation() -> {format: str, channel: int, sampleRate: int, bitsPerSample: int, lengthInSamples: int, duration: float}
+- hasStreamFinished() -> bool
+- releaseResources()
+- volume(level: int) -> int
+- offset(seconds: float | None) -> float
+- lookAheadInSeconds(seconds: float)
+- useDevice(name: str, type: str) -> "" (empty string)
+- deviceInformation() -> {name: str, type: str}
+- getAvailableDeviceList() -> list[{name: str, type: str}]
+- setDeviceChangedListener(listener: (devices, device)->())
+- clearNextTrack()
+- switchToNext()
+- initCacheRange(isNextTrack: bool, trackTimeRange: CacheRange, trackDataRange: CacheRange)
+- newCacheRanges() -> CacheRange
+
+With the contained `CacheRange` exposing the following functions:
+- setCacheSize(size: T)
+- addRange(start: T, end: T)
+- contains(value: T) -> bool
+- isComplete() -> bool
+- getRangeCopy() -> list[{start: T, end: T}]
+- isEmpty() -> bool
+
+The `CacheRange` serves as a primary progress tracker shared between the native player and the stream handler in JavaScript.
+- **`TrackDataCacheRange`** gets initialized (`setCacheSize`) and fed by JavaScript, telling the native extension which parts of the stream are already available.
+- **`TrackTimeCacheRange`** gets initialized (`setCacheSize`) by the native extension instead, which sets the cache size to the duration of the related track. JavaScript still adds ranges into it, though.
+
+None of these functions are directly related to existing JUCE classes, but they still use them under the hood (obviously).
 
 ####
 
